@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>CAEP_service</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+ <context-param>
+        <param-name>spring-beans-file</param-name>
+        <param-value>META-INF/applicationContext.xml</param-value>
+    </context-param>
+	<security-constraint id="ResourceConstraint">
+		<web-resource-collection id="ResourceCollection">
+			<web-resource-name>BankResources</web-resource-name>
+			<description>Protection area for Rest Servlet</description>
+			<!-- The <login-config> element doesn’t turn on authentication. By default, 
+				any client can access any URL provided by your web application with no constraints. 
+				To enforce authentication, you must specify a URL pattern you want to secure. 
+				In our example, we use the <url-pattern> element to specify that we want 
+				to secure the /caep/* URL. The <http-method> element says that we only want 
+				to secure POST requests to this URL. If we leave out the <http-method> element, 
+				all HTTP methods are secured. In our example, we only want to secure POST 
+				requests, so we must define the <http-method> element. -->
+			<url-pattern>/caep/*</url-pattern>
+			<!-- <http-method>POST</http-method> -->
+		</web-resource-collection>
+
+		<!-- Next, we have to specify which roles are allowed to POST to /caep/*. 
+			In the web.xml file example, we define an <auth-constraint> element within 
+			a <security-constraint>. This element has one or more <role-name> elements 
+			that define which roles are allowed to access the defined constraint. In 
+			our example, applying this XML only gives the admin role permission to access 
+			the /caep/* URL. If you set a <role-name> of * instead, any user would be 
+			able to access the constrained URL. Authentication with a valid user would 
+			still be required, though. In other words, a <role-name> of * means anybody 
+			who is able to log in can access the resource. -->
+
+		<auth-constraint id="ResourceAuth">
+			<description>All Resources are secured</description>
+			<role-name>BANKUSER</role-name>
+			<role-name>BANKADMIN</role-name>
+		</auth-constraint>
+
+		<!-- By default, the servlet specification will not require access over 
+			HTTPS to any user constraints you declare in your web.xml file. If you want 
+			to enforce HTTPS access for these constraints, you can specify a <user-data-constraint> 
+			within your <security-constraint> definitions. All you have to do is declare 
+			a <transport-guarantee> element within a <user-data-constraint> that has 
+			a value of CONFIDENTIAL. If a user tries to access the URL pattern with HTTP, 
+			she will be redirected to an HTTPS-based URL. -->
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+
+	</security-constraint>
+
+	<!-- The <login-config> element defines how we want our HTTP requests to 
+		be authenticated for our entire deployment. The <auth-method> subelement 
+		can be BASIC, DIGEST, or CLIENT_CERT. These values correspond to Basic, Digest, 
+		and Client Certificate Authentication, respectively. -->
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>bank</realm-name>
+	</login-config>
+
+
+	<!-- For every <role-name> we use in our <auth-constraints> declarations, 
+		we must define a corresponding <security-role> in the deployment descriptor. -->
+
+	<security-role>
+		<role-name>BANKADMIN</role-name>
+	</security-role>
+	<security-role>
+		<role-name>BANKUSER</role-name>
+	</security-role>
+</web-app>

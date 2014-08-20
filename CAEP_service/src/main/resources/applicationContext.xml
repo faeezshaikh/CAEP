@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	 http://www.springframework.org/schema/context 
+      http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- <tx:annotation-driven/> -->
+	<context:property-placeholder location="classpath:${my.env}.properties" />
+
+	<bean id="cinqAdapter" class="com.hcsc.caep.serviceimpl.CINQAdapter">
+		<property name="claimClient" ref="client"></property>
+		<property name="transformer" ref="claimsTransformer"></property>
+	</bean>
+
+	<bean id="service" class="com.hcsc.caep.serviceimpl.ClaimsServiceImpl">
+		<property name="cinq" ref="cinqAdapter"></property>
+		<property name="transformer" ref="claimsTransformer"></property>
+	</bean>
+	
+	<bean id="claimsTransformer" class="com.hcsc.caep.transformers.ClaimsTransformerImpl" />
+
+	<bean id="client" class="com.hcsc.cinq.client.ClaimInquiry"
+		factory-bean="clientFactory" factory-method="create" />
+
+	<bean id="clientFactory" class="org.apache.cxf.jaxws.JaxWsProxyFactoryBean">
+		<property name="serviceClass" value="com.hcsc.cinq.client.ClaimInquiry" />
+		<property name="address" value="${cinq.endpoint}" />
+	</bean>
+
+</beans>
